@@ -56,6 +56,7 @@
     if (tapGestureRecognizer.state == UIGestureRecognizerStateEnded) {
         if ([self.delegate respondsToSelector:@selector(messageCellTappedMessage:)]) {
             [self.delegate messageCellTappedMessage:self];
+            [[[UIApplication sharedApplication] keyWindow] endEditing:YES];
         }
     }
 }
@@ -121,16 +122,22 @@
         if (!self.messageProgressView.superview) {
             [self.messageContentView addSubview:self.messageProgressView];
         }
-        [self.messageProgressLabel setFrame:CGRectMake(0, self.messageImageView.bounds.size.height/2 - 8, self.messageImageView.bounds.size.width, 16)];
+        [self.messageProgressLabel setFrame:CGRectMake(0, self.messageImageView.image.size.height/2 - 8, self.messageImageView.image.size.width, 16)];
     } else {
-        [self.messageProgressView removeFromSuperview];
+        [self removeProgressView];
     }
+}
+
+- (void)removeProgressView {
+    [self.messageProgressView removeFromSuperview];
+     [[self.messageProgressView subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    self.messageProgressView = nil;
+    self.messageProgressLabel = nil;
 }
 
 #pragma mark - Getters
 
 - (UIImageView *)messageImageView {
-    
     if (!_messageImageView) {
         _messageImageView = [[UIImageView alloc] init];
         _messageImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -149,10 +156,17 @@
         progressLabel.font = [UIFont systemFontOfSize:14.0f];
         progressLabel.textColor = [UIColor whiteColor];
         progressLabel.textAlignment = NSTextAlignmentCenter;
-        progressLabel.text = @"0.0%";
+//        progressLabel.text = @"0.0%";
         [_messageProgressView addSubview:self.messageProgressLabel = progressLabel];
     }
     return _messageProgressView;
 }
+
+//- (void)prepareForReuse {
+//    [super prepareForReuse];
+//    if ([self.messageProgressLabel.text isEqualToString:@"100%"]) {
+//        [self.messageProgressLabel setText:@"0.0%"];
+//    }
+//}
 
 @end
